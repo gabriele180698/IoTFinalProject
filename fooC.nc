@@ -2,6 +2,8 @@
 #include "foo.h"
 #include "printf.h"
 
+#define	NUM_MOTES	5
+
 module fooC @safe() {
   uses {
     interface Boot;
@@ -12,6 +14,7 @@ module fooC @safe() {
     interface Packet;
   }
 }
+
 implementation {
 
   message_t packet;
@@ -19,8 +22,14 @@ implementation {
   //+++DA CAMBIARE le variabili dichiarate+++
   //+++++++++++++++++++++++++++++++++++++++++
   bool locked;
-  uint16_t counter = 0;
-  bool mask[3] = {0, 0, 0};  // service variable for printing the led status
+  
+  // array di struct per gestire i messaggi
+	fooMessage_t nodeArray[NUM_MOTES - 1];	
+  
+  // questo e' il numero progressivo utile per contare i messaggi consecutivi
+  uint16_t prog_num = 0;
+  
+//  bool mask[3] = {0, 0, 0};  // service variable for printing the led status
   
   //***************** Boot interface ********************//
   event void Boot.booted() {

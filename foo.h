@@ -5,7 +5,9 @@
 typedef nx_struct fooMessage {
   nx_uint16_t counter;
   nx_uint16_t nodeID;
-} fooMessage_t;
+	uint16_t prog_num;
+	
+} fooMessage_t; 
 
 enum {
   AM_RADIO_COUNT_MSG = 6,
