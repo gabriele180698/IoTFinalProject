@@ -98,19 +98,27 @@ implementation {
     	che è arrivato legato al messaggio è progressivo a quello che avevamo ricevuto 
     	e finalmente possiamo aggiornare il contatore nell'array delle strutture.     
     */
+//    printf("Ricevuto\n");
     
-    if (len != sizeof(fooMessage_t)) {return bufPtr;}
+    if (len != sizeof(fooMessage_t)) {
+ //   	printf("ERROR \n");	
+    	return bufPtr;
+    }
     
     else {
+    	
       fooMessage_t* rcm = (fooMessage_t*)payload;
-			
 			uint16_t check_p = nodeArray[(rcm -> nodeID) - 1].prog_num;
+
+// 	  	printf("check_p: %d; Rcv_prog_num: %d; rcvNode: %d \n", check_p, rcm -> prog_num, rcm -> nodeID);
+
   		
   		if((check_p + 1) == (rcm -> prog_num)) {
   			// so, they are consecutive messages
   			(nodeArray[(rcm -> nodeID) - 1].counter) ++; 
-  			if((nodeArray[(rcm -> nodeID) - 1].counter) == 10) {
-  				printf("My nodeID: %d; His nodeID: %d", TOS_NODE_ID, rcm -> nodeID);		
+  //			printf("Counter: %d\n", nodeArray[(rcm -> nodeID) - 1].counter);
+  			if((nodeArray[(rcm -> nodeID) - 1].counter) % 10 == 0) {
+  				printf("My nodeID: %d; His nodeID: %d, Counter: %d \n", TOS_NODE_ID, rcm -> nodeID, nodeArray[(rcm -> nodeID) - 1].counter);		
   				
   			}
   			
