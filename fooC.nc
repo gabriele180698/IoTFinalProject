@@ -118,8 +118,8 @@ implementation {
   			(nodeArray[(rcm -> nodeID) - 1].counter) ++; 
   //			printf("Counter: %d\n", nodeArray[(rcm -> nodeID) - 1].counter);
   			if((nodeArray[(rcm -> nodeID) - 1].counter) % 10 == 0) {
-  				printf("My nodeID: %d; His nodeID: %d, Counter: %d \n", TOS_NODE_ID, rcm -> nodeID, nodeArray[(rcm -> nodeID) - 1].counter);		
-  				
+  				//printf("My nodeID: %d; His nodeID: %d, Counter: %d \n", TOS_NODE_ID, rcm -> nodeID, nodeArray[(rcm -> nodeID) - 1].counter);		
+  				printf("%d %d\n", TOS_NODE_ID, rcm -> nodeID);
   			}
   			
   		} else {
