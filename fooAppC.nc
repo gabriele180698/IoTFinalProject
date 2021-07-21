@@ -19,7 +19,7 @@ implementation {
   App.Receive -> AMReceiverC;
   App.AMSend -> AMSenderC;
   App.AMControl -> ActiveMessageC;
-  App.Timer -> TimerMilliC;
+  App.MilliTimer -> TimerMilliC;
   App.Packet -> AMSenderC;
 }
 

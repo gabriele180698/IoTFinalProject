@@ -9,7 +9,7 @@ module fooC @safe() {
     interface Boot;
     interface Receive;
     interface AMSend;
-    interface Timer<TMilli> as Timer;
+    interface Timer<TMilli> as MilliTimer;
     interface SplitControl as AMControl;
     interface Packet;
   }
@@ -36,8 +36,8 @@ implementation {
     call AMControl.start(); // start the radio  	
 		
 		while (c < NUM_MOTES) {
-			nodeArray[c] -> counter = 0;	
-			nodeArray[c] -> prog_num = -1;	
+			nodeArray[c].counter = 0;	
+			nodeArray[c].prog_num = -1;	
 
 			c++;
 		}  
@@ -47,12 +47,9 @@ implementation {
 
   //***************** SplitControl interface ********************//
   event void AMControl.startDone(error_t err) {
-    if (err == SUCCESS) {
-    	call MilliTimer.startPeriodic(500); // peridoicity of 500ms	
-		}
-    
-    }
-    else {
+		if (err == SUCCESS) {
+			call MilliTimer.startPeriodic(500); // peridoicity of 500ms	
+		} else {
       call AMControl.start();
     }
   }
@@ -60,13 +57,13 @@ implementation {
   event void AMControl.stopDone(error_t err) {
   // do nothing
 	  if (err != SUCCESS) {
-			call SplitControl.stop();
+			call AMControl.stop();
 		}
     
   }
   
   //***************** MilliTimer interface ********************//
-  event void Timer.fired() {
+  event void MilliTimer.fired() {
   
     if (locked) {
       return;
@@ -107,23 +104,23 @@ implementation {
     else {
       fooMessage_t* rcm = (fooMessage_t*)payload;
 			
-			uint16_t check_p = arrayNode[(rcm -> nodeID) - 1] -> prog_num;
+			uint16_t check_p = nodeArray[(rcm -> nodeID) - 1].prog_num;
   		
   		if((check_p + 1) == (rcm -> prog_num)) {
   			// so, they are consecutive messages
-  			(arrayNode[(rcm -> nodeID) - 1] -> counter) ++; 
-  			if((arrayNode[(rcm -> nodeID) - 1] -> counter) == 10) {
+  			(nodeArray[(rcm -> nodeID) - 1].counter) ++; 
+  			if((nodeArray[(rcm -> nodeID) - 1].counter) == 10) {
   				printf("My nodeID: %d; His nodeID: %d", TOS_NODE_ID, rcm -> nodeID);		
   				
   			}
   			
   		} else {
   			// so, they are not consecutive messages
-  			arrayNode[(rcm -> nodeID) - 1] -> counter = 0; 
+  			nodeArray[(rcm -> nodeID) - 1].counter = 0; 
   			
   		}
   		
-  		arrayNode[(rcm -> nodeID) - 1] -> prog_num = (rcm -> prog_num);
+  		nodeArray[(rcm -> nodeID) - 1].prog_num = (rcm -> prog_num);
   			
       
       
