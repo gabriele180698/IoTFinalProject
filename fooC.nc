@@ -24,13 +24,17 @@ implementation {
   bool locked;
   
   // array di struct per gestire i messaggi
-	fooMessage_t nodeArray[NUM_MOTES - 1];	
+	rcvMsg_t nodeArray[NUM_MOTES];	
+	// initialization
+	for(int c = 0; c < NUM_MOTES; c++) {
+		nodeArray[c] -> counter = 0;	
+		nodeArray[c] -> prog_num = -1;	
+		
+	}
   
   // questo e' il numero progressivo utile per contare i messaggi consecutivi
-  uint16_t prog_num = 0;
-  
-//  bool mask[3] = {0, 0, 0};  // service variable for printing the led status
-  
+  uint16_t this_prog_num = 0;
+    
   //***************** Boot interface ********************//
   event void Boot.booted() {
     call AMControl.start(); // start the radio
@@ -68,12 +72,14 @@ implementation {
     	if (rcm == NULL) {
 			return;
 		}
-		rcm->counter = counter; // we enter the struct to set the counter
 		rcm->nodeID = TOS_NODE_ID; // we enter the struct to set the nodeID
+		rcm->prog_num = this_prog_num; // we enter the struct to bind the progressive counter with the msg 
 		if (call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(fooMessage_t)) == SUCCESS) {
 			locked = TRUE;
       	}
     }
+    
+    this_prog_num++; // here increase the progressive number for the messages
   }
 
   //********************* AMSend interface ****************//
@@ -90,45 +96,30 @@ implementation {
     //+++DA REIMPLEMENTARE DA ZERO. PENSO CHE LA MAGGIOR PARTE DELLA LOGICA FINIRA' QUA+++
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
-    // if we receive a msg, we increase the counter
-    counter++;
-    
+    /*
+    	Noi dobbiamo ricevere il messaggio, leggere l'ID del mote che lo ha inviato e usarlo come
+    	indice per la struttura dati, a questo punto controllo se il numero progressivo
+    	che è arrivato legato al messaggio è progressivo a quello che avevamo ricevuto 
+    	e finalmente possiamo aggiornare il contatore nell'array delle strutture.     
+    */
     
     if (len != sizeof(fooMessage_t)) {return bufPtr;}
     
     else {
       fooMessage_t* rcm = (fooMessage_t*)payload;
+			
+			uint16_t check_p = arrayNode[(rcm -> nodeID) - 1] -> prog_num;
+  		
+  		if((check_p + 1) == (rcm -> prog_num)) {
+  			// allora sono consecutivi
+  			
+  			arrayNode[(rcm -> nodeID) - 1] -> prog_num = (rcm -> prog_num);
+  			
+  		}
       
-      if ( (rcm -> counter % 10) == 0) {
-        // if counter mod 10 == 0, turn off all the leds
-		call Leds.led0Off();
-		call Leds.led1Off();
-		call Leds.led2Off();
-		mask[0] = 0;
-		mask[1] = 0;
-		mask[2] = 0;
-		
-      } else if( (rcm -> nodeID) == 1) {
-      	call Leds.led0Toggle();
-		mask[0] = !mask[0];
-		
-      } else if( (rcm -> nodeID) == 2) {
-      	call Leds.led1Toggle();
-		mask[1] = !mask[1];
-		
-      } else if( (rcm -> nodeID) == 3) {
-      	call Leds.led2Toggle();
-		mask[2] = !mask[2];
-		
-      } else {
-      	printf("\n\n ¯\_(ツ)_/¯ \n\n"); //easter egg
       
-      }
-      
-      if(TOS_NODE_ID==2){
-		  //here we print the nodeID and the attached status to debug and take the result for submiting
-		  printf("Sender NodeID: %d, CounterMsg: %d, Mote status: %d%d%d\n", rcm -> nodeID, rcm -> counter, mask[2], mask[1], mask[0]);
-	  }
+    //  printf("Sender NodeID: %d, CounterMsg: %d, Mote status: %d%d%d\n", rcm -> nodeID, rcm -> counter, mask[2], mask[1], mask[0]);
+	  
       
       return bufPtr;
     }
