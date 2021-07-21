@@ -26,18 +26,23 @@ implementation {
   // array di struct per gestire i messaggi
 	rcvMsg_t nodeArray[NUM_MOTES];	
 	// initialization
-	for(int c = 0; c < NUM_MOTES; c++) {
-		nodeArray[c] -> counter = 0;	
-		nodeArray[c] -> prog_num = -1;	
-		
-	}
+	uint16_t c = 0;
   
   // questo e' il numero progressivo utile per contare i messaggi consecutivi
   uint16_t this_prog_num = 0;
     
   //***************** Boot interface ********************//
   event void Boot.booted() {
-    call AMControl.start(); // start the radio
+    call AMControl.start(); // start the radio  	
+		
+		while (c < NUM_MOTES) {
+			nodeArray[c] -> counter = 0;	
+			nodeArray[c] -> prog_num = -1;	
+
+			c++;
+		}  
+
+
   }
 
   //***************** SplitControl interface ********************//
@@ -62,9 +67,7 @@ implementation {
   
   //***************** MilliTimer interface ********************//
   event void Timer.fired() {
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    //+++DA VEDERE SE SERVE AGGIUNGERE ALTRO NEL MESSAGGIO+++
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
     if (locked) {
       return;
     } else {
@@ -78,24 +81,20 @@ implementation {
 			locked = TRUE;
       	}
     }
-    
-    this_prog_num++; // here increase the progressive number for the messages
+
+		this_prog_num++; // here increase the progressive number for the messages    
   }
 
   //********************* AMSend interface ****************//
   event void AMSend.sendDone(message_t* bufPtr, error_t error) {
     if (&packet == bufPtr) {
-      counter++; // if we send a msg, we increase the counter
       locked = FALSE; // unlock the radio
     }
   }
 
   //***************************** Receive interface *****************//
   event message_t* Receive.receive(message_t* bufPtr, void* payload, uint8_t len) {
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    //+++DA REIMPLEMENTARE DA ZERO. PENSO CHE LA MAGGIOR PARTE DELLA LOGICA FINIRA' QUA+++
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    
+  
     /*
     	Noi dobbiamo ricevere il messaggio, leggere l'ID del mote che lo ha inviato e usarlo come
     	indice per la struttura dati, a questo punto controllo se il numero progressivo
@@ -111,11 +110,21 @@ implementation {
 			uint16_t check_p = arrayNode[(rcm -> nodeID) - 1] -> prog_num;
   		
   		if((check_p + 1) == (rcm -> prog_num)) {
-  			// allora sono consecutivi
+  			// so, they are consecutive messages
+  			(arrayNode[(rcm -> nodeID) - 1] -> counter) ++; 
+  			if((arrayNode[(rcm -> nodeID) - 1] -> counter) == 10) {
+  				printf("My nodeID: %d; His nodeID: %d", TOS_NODE_ID, rcm -> nodeID);		
+  				
+  			}
   			
-  			arrayNode[(rcm -> nodeID) - 1] -> prog_num = (rcm -> prog_num);
+  		} else {
+  			// so, they are not consecutive messages
+  			arrayNode[(rcm -> nodeID) - 1] -> counter = 0; 
   			
   		}
+  		
+  		arrayNode[(rcm -> nodeID) - 1] -> prog_num = (rcm -> prog_num);
+  			
       
       
     //  printf("Sender NodeID: %d, CounterMsg: %d, Mote status: %d%d%d\n", rcm -> nodeID, rcm -> counter, mask[2], mask[1], mask[0]);
