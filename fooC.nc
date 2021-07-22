@@ -20,12 +20,12 @@ implementation {
   message_t packet;
   bool locked;
   
-  // array di struct per gestire i messaggi
+  // array of struct to handle the msges
 	rcvMsg_t nodeArray[NUM_MOTES];	
 	// initialization
 	uint16_t c = 0;
   
-  // questo e' il numero progressivo utile per contare i messaggi consecutivi
+  // progressive number of the own mote 
   uint16_t this_prog_num = 0;
     
   //***************** Boot interface ********************//
@@ -69,6 +69,7 @@ implementation {
     	if (rcm == NULL) {
 			return;
 		}
+		
 		rcm->nodeID = TOS_NODE_ID; // we enter the struct to set the nodeID
 		rcm->prog_num = this_prog_num; // we enter the struct to bind the progressive counter with the msg 
 		if (call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(fooMessage_t)) == SUCCESS) {
@@ -96,6 +97,11 @@ implementation {
     	e finalmente possiamo aggiornare il contatore nell'array delle strutture.     
     */
     
+    /*
+    	The logic of this function is the most importnt. Every mote handle this way the msg
+    	that it receive. 
+    */
+    
     if (len != sizeof(fooMessage_t)) {
     	return bufPtr;
     }
@@ -105,8 +111,9 @@ implementation {
       fooMessage_t* rcm = (fooMessage_t*)payload;
 			uint16_t check_p = nodeArray[(rcm -> nodeID) - 1].prog_num;
   		
+  		// Check of the progressive number in order to count properly the progressive numbers
   		if((check_p + 1) == (rcm -> prog_num)) {
-  			// so, they are consecutive messages
+  			// they are consecutive messages
   			(nodeArray[(rcm -> nodeID) - 1].counter) ++; 
   
   			if((nodeArray[(rcm -> nodeID) - 1].counter) == 10) {
@@ -116,7 +123,7 @@ implementation {
   			}
   			
   		} else {
-  			// so, they are not consecutive messages
+  			// they are not consecutive messages
   			nodeArray[(rcm -> nodeID) - 1].counter = 0; 
   			
   		}
