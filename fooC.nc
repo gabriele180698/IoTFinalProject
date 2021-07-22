@@ -111,7 +111,7 @@ implementation {
   
   			if((nodeArray[(rcm -> nodeID) - 1].counter) == 10) {
   				
-  				printf("This is a proximity alarm message, I want to notify you that somebody is too close to you, that's not safe! Look around and try to get the distance @%d@%d@\n", TOS_NODE_ID, rcm -> nodeID);		
+  				printf("This is a proximity alarm message, I want to notify you that somebody is too close to you, that's not safe. Get the distance &%d&%d&!\n", TOS_NODE_ID, rcm -> nodeID);		
   				
   			}
   			

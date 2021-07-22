@@ -1,0 +1,10 @@
+{"value1":"1","value2":"3"}
+Congratulations! You've fired the Proximity_Alert event
+{"value1":"1","value2":"4"}
+Congratulations! You've fired the Proximity_Alert event
+{"value1":"1","value2":"5"}
+Congratulations! You've fired the Proximity_Alert event
+{"value1":"1","value2":"2"}
+Congratulations! You've fired the Proximity_Alert event
+{"value1":"1","value2":"3"}
+Congratulations! You've fired the Proximity_Alert event
