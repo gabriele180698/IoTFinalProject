@@ -18,9 +18,6 @@ module fooC @safe() {
 implementation {
 
   message_t packet;
-  //+++++++++++++++++++++++++++++++++++++++++
-  //+++DA CAMBIARE le variabili dichiarate+++
-  //+++++++++++++++++++++++++++++++++++++++++
   bool locked;
   
   // array di struct per gestire i messaggi
@@ -98,10 +95,8 @@ implementation {
     	che è arrivato legato al messaggio è progressivo a quello che avevamo ricevuto 
     	e finalmente possiamo aggiornare il contatore nell'array delle strutture.     
     */
-//    printf("Ricevuto\n");
     
     if (len != sizeof(fooMessage_t)) {
- //   	printf("ERROR \n");	
     	return bufPtr;
     }
     
@@ -109,20 +104,15 @@ implementation {
     	
       fooMessage_t* rcm = (fooMessage_t*)payload;
 			uint16_t check_p = nodeArray[(rcm -> nodeID) - 1].prog_num;
-
-// 	  	printf("check_p: %d; Rcv_prog_num: %d; rcvNode: %d \n", check_p, rcm -> prog_num, rcm -> nodeID);
-
   		
   		if((check_p + 1) == (rcm -> prog_num)) {
   			// so, they are consecutive messages
   			(nodeArray[(rcm -> nodeID) - 1].counter) ++; 
-  //			printf("Counter: %d\n", nodeArray[(rcm -> nodeID) - 1].counter);
-  
-  //+++++++++++++ HO RIMESSO ==10 PERCHE' MI VENIVA PIU' FARE LE SIMULAZIONI ALLONTANANDOP E AVVICINANDO NODI+++++++++++++++++++
   
   			if((nodeArray[(rcm -> nodeID) - 1].counter) == 10) {
-  				printf("$-------------------------------------------------------------------------------------------------------------------------------&%d&%d&\n", TOS_NODE_ID, rcm -> nodeID);		
-  				//printf("%d %d\n",TOS_NODE_ID, rcm -> nodeID);
+  				
+  				printf("This is a proximity alarm message, I want to notify you that somebody is too close to you, that's not safe! Look around and try to get the distance @%d@%d@\n", TOS_NODE_ID, rcm -> nodeID);		
+  				
   			}
   			
   		} else {
@@ -131,12 +121,7 @@ implementation {
   			
   		}
   		
-  		nodeArray[(rcm -> nodeID) - 1].prog_num = (rcm -> prog_num);
-  			
-      
-      
-    //  printf("Sender NodeID: %d, CounterMsg: %d, Mote status: %d%d%d\n", rcm -> nodeID, rcm -> counter, mask[2], mask[1], mask[0]);
-	  
+  		nodeArray[(rcm -> nodeID) - 1].prog_num = (rcm -> prog_num);  
       
       return bufPtr;
     }
