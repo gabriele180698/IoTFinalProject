@@ -91,13 +91,6 @@ implementation {
   event message_t* Receive.receive(message_t* bufPtr, void* payload, uint8_t len) {
   
     /*
-    	Noi dobbiamo ricevere il messaggio, leggere l'ID del mote che lo ha inviato e usarlo come
-    	indice per la struttura dati, a questo punto controllo se il numero progressivo
-    	che è arrivato legato al messaggio è progressivo a quello che avevamo ricevuto 
-    	e finalmente possiamo aggiornare il contatore nell'array delle strutture.     
-    */
-    
-    /*
     	The logic of this function is the most importnt. Every mote handle this way the msg
     	that it receive. 
     */
