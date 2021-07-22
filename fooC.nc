@@ -117,7 +117,10 @@ implementation {
   			// so, they are consecutive messages
   			(nodeArray[(rcm -> nodeID) - 1].counter) ++; 
   //			printf("Counter: %d\n", nodeArray[(rcm -> nodeID) - 1].counter);
-  			if((nodeArray[(rcm -> nodeID) - 1].counter) % 10 == 0) {
+  
+  //+++++++++++++ HO RIMESSO ==10 PERCHE' MI VENIVA PIU' FARE LE SIMULAZIONI ALLONTANANDOP E AVVICINANDO NODI+++++++++++++++++++
+  
+  			if((nodeArray[(rcm -> nodeID) - 1].counter) == 10) {
   				printf("$-------------------------------------------------------------------------------------------------------------------------------&%d&%d&\n", TOS_NODE_ID, rcm -> nodeID);		
   				//printf("%d %d\n",TOS_NODE_ID, rcm -> nodeID);
   			}
