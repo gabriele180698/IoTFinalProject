@@ -20,10 +20,10 @@ implementation {
   message_t packet;
   bool locked;
   
-  // array of struct to handle the msges
-	rcvMsg_t nodeArray[NUM_MOTES];	
-	// initialization
-	uint16_t c = 0;
+  // array of struct to handle the msgs
+  rcvMsg_t nodeArray[NUM_MOTES];	
+  // initialization
+  uint16_t c = 0;
   
   // progressive number of the own mote 
   uint16_t this_prog_num = 0;
@@ -45,7 +45,7 @@ implementation {
   //***************** SplitControl interface ********************//
   event void AMControl.startDone(error_t err) {
 		if (err == SUCCESS) {
-			call MilliTimer.startPeriodic(500); // peridoicity of 500ms	
+			call MilliTimer.startPeriodic(500); // periodicity of 500ms	
 		} else {
       call AMControl.start();
     }
@@ -77,7 +77,7 @@ implementation {
       	}
     }
 
-		this_prog_num++; // here increase the progressive number for the messages    
+		this_prog_num++; // here we increase the progressive number for the messages    
   }
 
   //********************* AMSend interface ****************//
@@ -91,8 +91,8 @@ implementation {
   event message_t* Receive.receive(message_t* bufPtr, void* payload, uint8_t len) {
   
     /*
-    	The logic of this function is the most importnt. Every mote handle this way the msg
-    	that it receive. 
+    	The logic of this function is the most importnt. Every mote handle in this way the 
+    	msg that it receives. Please, see the report for more details.
     */
     
     if (len != sizeof(fooMessage_t)) {
@@ -104,7 +104,7 @@ implementation {
       fooMessage_t* rcm = (fooMessage_t*)payload;
 			uint16_t check_p = nodeArray[(rcm -> nodeID) - 1].prog_num;
   		
-  		// Check of the progressive number in order to count properly the progressive numbers
+  		// Check of the progressive number in order to count properly the consecutive messages
   		if((check_p + 1) == (rcm -> prog_num)) {
   			// they are consecutive messages
   			(nodeArray[(rcm -> nodeID) - 1].counter) ++; 
